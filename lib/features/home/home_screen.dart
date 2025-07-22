@@ -1,11 +1,20 @@
+import 'package:counter_two/features/home/database/db_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final DatabaseHelper databaseHelper = DatabaseHelper();
+
+  @override
   Widget build(BuildContext context) {
+    List name = ["mahmoud", "ahmed", "ali"];
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
       body: SizedBox(
@@ -56,50 +65,68 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.builder(
-                  itemCount: 3,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.85,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 20,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 2,
-                            blurRadius: 3,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset('assets/pngs/meal.png'),
-                          SizedBox(height: 8),
-                          Text('Cheese Burger'),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              SvgPicture.asset('assets/pngs/star.svg'),
-                              SizedBox(width: 5),
-                              Text('4.9'),
-                              Spacer(),
-                              SvgPicture.asset('assets/pngs/clock.svg'),
-                              SizedBox(width: 5),
-                              Text('20 - 30'),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
+                child: FutureBuilder(
+                  future: databaseHelper.getMeals(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasData) {
+                      final mealModel = snapshot.data!;
+                      if (snapshot.data!.isEmpty) {
+                        return Center(child: Text('no meals found'));
+                      }
+                      return GridView.builder(
+                        itemCount: mealModel.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.85,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                        ),
+                        itemBuilder: (context, index) {
+                          final meal = mealModel[index];
+                          return Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.network(meal.imageUrl),
+                                SizedBox(height: 8),
+                                Text(meal.name),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    SvgPicture.asset('assets/pngs/star.svg'),
+                                    SizedBox(width: 5),
+                                    Text(meal.rate.toString()),
+                                    Spacer(),
+                                    SvgPicture.asset('assets/pngs/clock.svg'),
+                                    SizedBox(width: 5),
+                                    Text(meal.time),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text(snapshot.error.toString()));
+                    } else {
+                      return SizedBox();
+                    }
                   },
                 ),
               ),
