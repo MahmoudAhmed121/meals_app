@@ -20,7 +20,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'meals.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 1, 
       onCreate: _createDatabase,
     );
 
@@ -54,6 +54,5 @@ class DatabaseHelper {
     }).toList();
     return meals;
   }
-
   
 }
