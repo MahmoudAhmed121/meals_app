@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:counter_two/features/add_meal/add_meal_screen.dart';
 import 'package:counter_two/features/home/database/db_helper.dart';
+import 'package:counter_two/features/meal_details/meal_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -97,62 +98,77 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         itemBuilder: (context, index) {
                           final meal = mealModel[index];
-                          return Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                  offset: Offset(0, 2),
+
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MealDetailsScreen(mealModel: meal),
                                 ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: SizedBox(
-                                    width: size.width,
-                                    height: 100,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: meal.imageUrl,
-                                      placeholder: (context, url) => Container(
-                                        width: size.height,
-                                        height: 100,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: SizedBox(
+                                      width: size.width,
+                                      height: 100,
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: meal.imageUrl,
+                                        placeholder: (context, url) =>
+                                            Container(
+                                              width: size.height,
+                                              height: 100,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                            ),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(
+                                              Icons.error,
+                                              color: Colors.red,
+                                            ),
                                       ),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error, color: Colors.red),
                                     ),
                                   ),
-                                ),
 
-                                SizedBox(height: 8),
-                                Text(meal.name),
-                                SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    SvgPicture.asset('assets/pngs/star.svg'),
-                                    SizedBox(width: 5),
-                                    Text(meal.rate.toString()),
-                                    Spacer(),
-                                    SvgPicture.asset('assets/pngs/clock.svg'),
-                                    SizedBox(width: 5),
-                                    Text(meal.time),
-                                  ],
-                                ),
-                              ],
+                                  SizedBox(height: 8),
+                                  Text(meal.name),
+                                  SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset('assets/pngs/star.svg'),
+                                      SizedBox(width: 5),
+                                      Text(meal.rate.toString()),
+                                      Spacer(),
+                                      SvgPicture.asset('assets/pngs/clock.svg'),
+                                      SizedBox(width: 5),
+                                      Text(meal.time),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
